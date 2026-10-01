@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Editores
+.vscode/
+.idea/
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Logs e temporários
+*.log
+*.tmp
+
+# Credenciais do Kubernetes (nunca commitar)
+kubeconfig
+*.kubeconfig
