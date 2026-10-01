@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-primos
+  namespace: primos
+  labels:
+    app: api-primos
+spec:
+  replicas: 2                      # duas réplicas iniciais
+  selector:
+    matchLabels:
+      app: api-primos              # o Deployment gerencia pods com este label
+  template:
+    metadata:
+      labels:
+        app: api-primos
+    spec:
+      containers:
+        - name: api-primos
+          image: api-primos:1.0
+          imagePullPolicy: Never   # usa a imagem já carregada no Minikube
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:              # garantido; base para o cálculo do HPA
+              cpu: 100m
+              memory: 64Mi
+            limits:                # teto máximo
+              cpu: 500m
+              memory: 128Mi
+          livenessProbe:           # "o container está vivo?" -> se falhar, reinicia
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:          # "pode receber tráfego?" -> se falhar, sai do Service
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
