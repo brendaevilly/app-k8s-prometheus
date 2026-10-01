@@ -1,0 +1,29 @@
+# Valores do Helm para o kube-prometheus-stack.
+# Aplicar com:
+#   helm upgrade monitoring prometheus-community/kube-prometheus-stack -n monitoring -f monitoring/values.yaml --wait --timeout 10m
+
+alertmanager:
+  enabled: false
+
+grafana:
+  enabled: false
+
+prometheus:
+  prometheusSpec:
+    # Faz o Prometheus enxergar qualquer ServiceMonitor do cluster (inclusive o da nossa app)
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+    # Coleta mais frequente = graficos mais detalhados nos experimentos
+    scrapeInterval: 15s
+    evaluationInterval: 15s
+
+    # Persistencia: sem isso os dados ficam em um volume temporario (emptyDir)
+    # e sao PERDIDOS quando o pod do Prometheus e removido (Experimento 4).
+    retention: 24h
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi
